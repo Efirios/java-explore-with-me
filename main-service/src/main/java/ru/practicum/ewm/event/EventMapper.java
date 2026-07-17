@@ -1,6 +1,7 @@
 package ru.practicum.ewm.event;
 
 import java.time.LocalDateTime;
+import lombok.experimental.UtilityClass;
 import ru.practicum.ewm.category.Category;
 import ru.practicum.ewm.category.CategoryMapper;
 import ru.practicum.ewm.event.dto.EventFullDto;
@@ -10,12 +11,10 @@ import ru.practicum.ewm.event.dto.NewEventDto;
 import ru.practicum.ewm.user.User;
 import ru.practicum.ewm.user.UserMapper;
 
-public final class EventMapper {
+@UtilityClass
+public class EventMapper {
 
-    private EventMapper() {
-    }
-
-    public static Event toEvent(NewEventDto dto, Category category, User initiator) {
+    public Event toEvent(NewEventDto dto, Category category, User initiator) {
         return Event.builder()
                 .annotation(dto.getAnnotation())
                 .category(category)
@@ -32,7 +31,7 @@ public final class EventMapper {
                 .build();
     }
 
-    public static EventShortDto toShortDto(Event event, long confirmedRequests, long views) {
+    public EventShortDto toShortDto(Event event, long confirmedRequests, long views) {
         return EventShortDto.builder()
                 .id(event.getId())
                 .annotation(event.getAnnotation())
@@ -46,7 +45,7 @@ public final class EventMapper {
                 .build();
     }
 
-    public static EventFullDto toFullDto(Event event, long confirmedRequests, long views) {
+    public EventFullDto toFullDto(Event event, long confirmedRequests, long views) {
         return EventFullDto.builder()
                 .id(event.getId())
                 .annotation(event.getAnnotation())
@@ -67,14 +66,14 @@ public final class EventMapper {
                 .build();
     }
 
-    public static Location toLocation(LocationDto dto) {
+    public Location toLocation(LocationDto dto) {
         return Location.builder()
                 .lat(dto.getLat())
                 .lon(dto.getLon())
                 .build();
     }
 
-    public static LocationDto toLocationDto(Location location) {
+    public LocationDto toLocationDto(Location location) {
         return LocationDto.builder()
                 .lat(location.getLat())
                 .lon(location.getLon())

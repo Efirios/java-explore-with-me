@@ -1,22 +1,21 @@
 package ru.practicum.ewm.user;
 
+import lombok.experimental.UtilityClass;
 import ru.practicum.ewm.user.dto.NewUserRequest;
 import ru.practicum.ewm.user.dto.UserDto;
 import ru.practicum.ewm.user.dto.UserShortDto;
 
-public final class UserMapper {
+@UtilityClass
+public class UserMapper {
 
-    private UserMapper() {
-    }
-
-    public static User toUser(NewUserRequest request) {
+    public User toUser(NewUserRequest request) {
         return User.builder()
                 .name(request.getName())
                 .email(request.getEmail())
                 .build();
     }
 
-    public static UserDto toUserDto(User user) {
+    public UserDto toUserDto(User user) {
         return UserDto.builder()
                 .id(user.getId())
                 .name(user.getName())
@@ -24,7 +23,7 @@ public final class UserMapper {
                 .build();
     }
 
-    public static UserShortDto toUserShortDto(User user) {
+    public UserShortDto toUserShortDto(User user) {
         return UserShortDto.builder()
                 .id(user.getId())
                 .name(user.getName())

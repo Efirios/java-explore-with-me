@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import ru.practicum.ewm.event.dto.EventFullDto;
 import ru.practicum.ewm.event.dto.UpdateEventAdminRequest;
-import ru.practicum.ewm.util.Constants;
+import ru.practicum.stats.dto.Constants;
 
 @RestController
 @RequestMapping("/admin/events")

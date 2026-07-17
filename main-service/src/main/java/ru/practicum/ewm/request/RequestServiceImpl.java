@@ -114,7 +114,7 @@ public class RequestServiceImpl implements RequestService {
             }
         }
 
-        if ("REJECTED".equals(updateRequest.getStatus())) {
+        if (updateRequest.getStatus() == RequestStatus.REJECTED) {
             for (ParticipationRequest request : requests) {
                 request.setStatus(RequestStatus.REJECTED);
                 rejected.add(RequestMapper.toDto(request));

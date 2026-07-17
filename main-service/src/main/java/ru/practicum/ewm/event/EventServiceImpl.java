@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
@@ -30,7 +31,6 @@ import ru.practicum.ewm.request.RequestRepository;
 import ru.practicum.ewm.request.RequestStatus;
 import ru.practicum.ewm.user.User;
 import ru.practicum.ewm.user.UserRepository;
-import ru.practicum.ewm.util.Constants;
 import ru.practicum.ewm.util.OffsetPageRequest;
 import ru.practicum.stats.client.StatsClient;
 import ru.practicum.stats.dto.EndpointHitDto;
@@ -49,6 +49,9 @@ public class EventServiceImpl implements EventService {
     private final RequestRepository requestRepository;
 
     private final StatsClient statsClient;
+
+    @Value("${spring.application.name}")
+    private String appName;
 
     @Override
     @Transactional(readOnly = true)
@@ -215,13 +218,16 @@ public class EventServiceImpl implements EventService {
             }
         }
 
-        List<Event> events = eventRepository.findAll(spec);
+        if (onlyAvailable) {
+            spec = spec.and(EventSpecification.onlyAvailable());
+        }
+
+        Pageable pageable = OffsetPageRequest.of(from, size, Sort.by("eventDate"));
+        List<Event> events = eventRepository.findAll(spec, pageable).getContent();
         Map<Long, Long> confirmedMap = getConfirmedMap(events);
         Map<Long, Long> viewsMap = getViewsMap(events);
 
         List<EventShortDto> result = events.stream()
-                .filter(event -> !onlyAvailable
-                        || isAvailable(event, confirmedMap.getOrDefault(event.getId(), 0L)))
                 .map(event -> EventMapper.toShortDto(event,
                         confirmedMap.getOrDefault(event.getId(), 0L),
                         viewsMap.getOrDefault(event.getId(), 0L)))
@@ -229,11 +235,8 @@ public class EventServiceImpl implements EventService {
 
         if (sort == EventSort.VIEWS) {
             result.sort(Comparator.comparing(EventShortDto::getViews, Comparator.reverseOrder()));
-        } else {
-            result.sort(Comparator.comparing(EventShortDto::getEventDate));
         }
-
-        return result.stream().skip(from).limit(size).toList();
+        return result;
     }
 
     @Override
@@ -272,10 +275,6 @@ public class EventServiceImpl implements EventService {
         if (title != null) {
             event.setTitle(title);
         }
-    }
-
-    private boolean isAvailable(Event event, long confirmed) {
-        return event.getParticipantLimit() == 0 || confirmed < event.getParticipantLimit();
     }
 
     private List<EventFullDto> toFullDtoList(List<Event> events) {
@@ -336,7 +335,7 @@ public class EventServiceImpl implements EventService {
 
     private void recordHit(HttpServletRequest request) {
         statsClient.hit(EndpointHitDto.builder()
-                .app(Constants.APP_NAME)
+                .app(appName)
                 .uri(request.getRequestURI())
                 .ip(request.getRemoteAddr())
                 .timestamp(LocalDateTime.now())

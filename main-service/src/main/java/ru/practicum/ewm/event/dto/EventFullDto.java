@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 import ru.practicum.ewm.category.dto.CategoryDto;
 import ru.practicum.ewm.event.EventState;
 import ru.practicum.ewm.user.dto.UserShortDto;
-import ru.practicum.ewm.util.Constants;
+import ru.practicum.stats.dto.Constants;
 
 @Data
 @Builder

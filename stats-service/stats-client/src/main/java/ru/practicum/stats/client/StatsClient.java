@@ -1,7 +1,6 @@
 package ru.practicum.stats.client;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -17,8 +16,6 @@ import ru.practicum.stats.dto.ViewStatsDto;
 @Service
 public class StatsClient {
 
-    private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern(Constants.DATE_TIME_PATTERN);
-
     private final RestTemplate rest;
 
     public StatsClient(@Value("${stats-server.url}") String serverUrl, RestTemplateBuilder builder) {
@@ -33,8 +30,8 @@ public class StatsClient {
 
     public List<ViewStatsDto> getStats(LocalDateTime start, LocalDateTime end, List<String> uris, boolean unique) {
         Map<String, Object> parameters = new HashMap<>();
-        parameters.put("start", start.format(FORMATTER));
-        parameters.put("end", end.format(FORMATTER));
+        parameters.put("start", start.format(Constants.FORMATTER));
+        parameters.put("end", end.format(Constants.FORMATTER));
         parameters.put("unique", unique);
 
         StringBuilder path = new StringBuilder("/stats?start={start}&end={end}&unique={unique}");
