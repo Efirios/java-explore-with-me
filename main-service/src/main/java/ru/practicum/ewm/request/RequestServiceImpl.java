@@ -1,6 +1,7 @@
 package ru.practicum.ewm.request;
 
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -48,7 +49,7 @@ public class RequestServiceImpl implements RequestService {
         }
         boolean autoConfirm = limit == 0 || Boolean.FALSE.equals(event.getRequestModeration());
         ParticipationRequest request = ParticipationRequest.builder()
-                .created(LocalDateTime.now())
+                .created(LocalDateTime.now().truncatedTo(ChronoUnit.MILLIS))
                 .event(event)
                 .requester(user)
                 .status(autoConfirm ? RequestStatus.CONFIRMED : RequestStatus.PENDING)

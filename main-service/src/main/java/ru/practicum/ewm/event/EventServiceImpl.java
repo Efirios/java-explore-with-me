@@ -77,7 +77,7 @@ public class EventServiceImpl implements EventService {
         User initiator = getUserOrThrow(userId);
         Category category = getCategoryOrThrow(dto.getCategory());
         if (dto.getEventDate().isBefore(LocalDateTime.now().plusHours(2))) {
-            throw new ConflictException("Event date must be at least two hours from now");
+            throw new ValidationException("Event date must be at least two hours from now");
         }
         Event event = eventRepository.save(EventMapper.toEvent(dto, category, initiator));
         return EventMapper.toFullDto(event, 0L, 0L);
@@ -103,7 +103,7 @@ public class EventServiceImpl implements EventService {
         }
         if (dto.getEventDate() != null) {
             if (dto.getEventDate().isBefore(LocalDateTime.now().plusHours(2))) {
-                throw new ConflictException("Event date must be at least two hours from now");
+                throw new ValidationException("Event date must be at least two hours from now");
             }
             event.setEventDate(dto.getEventDate());
         }
@@ -149,6 +149,9 @@ public class EventServiceImpl implements EventService {
         Event event = getEventOrThrow(eventId);
         LocalDateTime now = LocalDateTime.now();
         if (dto.getEventDate() != null) {
+            if (dto.getEventDate().isBefore(now)) {
+                throw new ValidationException("Event date must not be in the past");
+            }
             if (dto.getEventDate().isBefore(now.plusHours(1))) {
                 throw new ConflictException("Event date must be at least one hour after the publication date");
             }
