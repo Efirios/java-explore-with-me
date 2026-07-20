@@ -5,6 +5,8 @@ import java.util.Optional;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 public interface EventRepository extends JpaRepository<Event, Long>, JpaSpecificationExecutor<Event> {
 
@@ -15,4 +17,11 @@ public interface EventRepository extends JpaRepository<Event, Long>, JpaSpecific
     Optional<Event> findByIdAndInitiatorId(Long id, Long initiatorId);
 
     Optional<Event> findByIdAndState(Long id, EventState state);
+
+    @Query(value = "SELECT * FROM events e WHERE e.state = :state AND "
+            + "6371 * acos(LEAST(1.0, GREATEST(-1.0, sin(radians(:lat)) * sin(radians(e.lat)) "
+            + "+ cos(radians(:lat)) * cos(radians(e.lat)) * cos(radians(e.lon) - radians(:lon))))) <= :radius",
+            nativeQuery = true)
+    List<Event> findInArea(@Param("state") String state, @Param("lat") Float lat,
+                           @Param("lon") Float lon, @Param("radius") Float radius);
 }
