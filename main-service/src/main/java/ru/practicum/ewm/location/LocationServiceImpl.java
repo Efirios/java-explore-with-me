@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.ewm.event.Event;
 import ru.practicum.ewm.event.EventRepository;
 import ru.practicum.ewm.event.EventService;
+import ru.practicum.ewm.event.EventState;
 import ru.practicum.ewm.event.dto.EventShortDto;
 import ru.practicum.ewm.exception.NotFoundException;
 import ru.practicum.ewm.location.dto.LocationDto;
@@ -78,8 +79,8 @@ public class LocationServiceImpl implements LocationService {
     @Transactional(readOnly = true)
     public List<EventShortDto> getEventsInLocation(Long locId) {
         Location location = getLocationOrThrow(locId);
-        List<Event> events = eventRepository.findPublishedInArea(
-                location.getLat(), location.getLon(), location.getRadius());
+        List<Event> events = eventRepository.findInArea(
+                EventState.PUBLISHED.name(), location.getLat(), location.getLon(), location.getRadius());
         return eventService.toShortDtos(events);
     }
 

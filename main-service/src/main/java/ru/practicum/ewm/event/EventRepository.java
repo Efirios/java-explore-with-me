@@ -18,9 +18,10 @@ public interface EventRepository extends JpaRepository<Event, Long>, JpaSpecific
 
     Optional<Event> findByIdAndState(Long id, EventState state);
 
-    @Query(value = "SELECT * FROM events e WHERE e.state = 'PUBLISHED' AND "
-            + "6371 * acos(LEAST(1.0, sin(radians(:lat)) * sin(radians(e.lat)) "
-            + "+ cos(radians(:lat)) * cos(radians(e.lat)) * cos(radians(e.lon) - radians(:lon)))) <= :radius",
+    @Query(value = "SELECT * FROM events e WHERE e.state = :state AND "
+            + "6371 * acos(LEAST(1.0, GREATEST(-1.0, sin(radians(:lat)) * sin(radians(e.lat)) "
+            + "+ cos(radians(:lat)) * cos(radians(e.lat)) * cos(radians(e.lon) - radians(:lon))))) <= :radius",
             nativeQuery = true)
-    List<Event> findPublishedInArea(@Param("lat") Float lat, @Param("lon") Float lon, @Param("radius") Float radius);
+    List<Event> findInArea(@Param("state") String state, @Param("lat") Float lat,
+                           @Param("lon") Float lon, @Param("radius") Float radius);
 }
